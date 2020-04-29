@@ -234,7 +234,7 @@ int main(int argc, const char *argv[])
             (dataBuffer.end()-1)->bbMatches = bbBestMatches;
 
             // cout << "#8 : TRACK 3D OBJECT BOUNDING BOXES done" << endl;
-			continue;
+
 
             /* COMPUTE TTC ON OBJECT IN FRONT */
 
@@ -275,7 +275,7 @@ int main(int argc, const char *argv[])
                     clusterKptMatchesWithROI(*currBB, (dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints, (dataBuffer.end() - 1)->kptMatches);                    
                     computeTTCCamera((dataBuffer.end() - 2)->keypoints, (dataBuffer.end() - 1)->keypoints, currBB->kptMatches, sensorFrameRate, ttcCamera);
                     //// EOF STUDENT ASSIGNMENT
-
+					continue;
                     bVis = true;
                     if (bVis)
                     {

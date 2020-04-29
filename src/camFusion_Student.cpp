@@ -147,10 +147,33 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
 
 void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
                      std::vector<LidarPoint> &lidarPointsCurr, double frameRate, double &TTC)
-{
-    // ...
+{ 
+  	std::vector<double> current;
+  	std::vector<double> previous;
+   for(auto it = lidarPointsPrev.begin(); it != lidarPointsPrev.end(); it++)
+    {
+      previous.push_back(it->x);
+    }
+   for(auto it = lidarPointsCurr.begin(); it != lidarPointsCurr.end(); it++)
+    {
+      current.push_back(it->x);
+    }
+    sort(previous.begin(), previous.end());
+  	sort(current.begin(), current.end());
+    int curr_size = static_cast<int>(current.size()*0.10);
+    int prev_size = static_cast<int>(previous.size()*0.10);
+    double minXCurr = accumulate(current.begin()+curr_size, current.begin()+curr_size+5, 0.0)/5;
+    double minXPrev = accumulate(previous.begin()+prev_size, previous.begin()+prev_size+5, 0.0)/5;
+//     double minXCurr = current.at(static_cast<int>(current.size()*0.10));
+//     double minXPrev = previous.at(static_cast<int>(previous.size()*0.10));
+  	try{
+    TTC = minXCurr/(frameRate*(minXPrev - minXCurr));
+  	}
+   	catch(...){
+     TTC = 0;
+   	}
+    cout << "Time to collision : " << TTC << std ::endl;  
 }
-
 
 void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bbBestMatches, DataFrame &prevFrame, DataFrame &currFrame)
 {
@@ -188,8 +211,7 @@ void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bb
    	}
     int max_countCurr = 0;
     int best_currBox = 0;
-    auto curr_id =0;
-    for(curr_id = 0; curr_id < curr_boxes; curr_id++)
+    for(auto curr_id = 0; curr_id < curr_boxes; curr_id++)
     {
     	int temp_count = std::count(curr_box.begin(), curr_box.end(), curr_id); 
 //         std::cout << "Curr box ID: " << curr_id << "with count " << temp_count << std::endl;
