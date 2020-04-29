@@ -154,5 +154,51 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
 
 void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bbBestMatches, DataFrame &prevFrame, DataFrame &currFrame)
 {
-    // ...
+  std::multimap<int, int> mm;
+  auto train_bb = currFrame;
+  auto query_bb = prevFrame;
+  int prev_boxes = query_bb.boundingBoxes.size();
+  int curr_boxes = train_bb.boundingBoxes.size();
+     for(auto it = matches.begin(); it < matches.end();it++)
+       { 
+		for(auto bb1 = train_bb.boundingBoxes.begin(); bb1 < train_bb.boundingBoxes.end(); ++bb1)
+        {
+          if((*bb1).roi.contains(train_bb.keypoints[(*it).trainIdx].pt))
+          {
+            for(auto bb2 = query_bb.boundingBoxes.begin(); bb2 < query_bb.boundingBoxes.end(); ++bb2)
+            {
+            	if((*bb2).roi.contains(query_bb.keypoints[(*it).queryIdx].pt))
+                { 
+                  mm.insert(std::pair<int,int>(bb2->boxID, bb1->boxID));
+                } // if of bb2
+            } // for of bb2
+          } //if of bb1
+          } // for of bb1
+      }//matches
+
+  for(auto prev_id = 0; prev_id < prev_boxes; prev_id++)
+  {
+//     cout << "Previous frame box ID:" << prev_id << " with count " << mm.count(prev_id) << std::endl;
+    auto best_boxes = mm.equal_range(prev_id);
+    std::vector<int> curr_box;
+    for(auto it = best_boxes.first; it!= best_boxes.second; ++it)
+  	{
+		if(it->first == prev_id)
+		curr_box.push_back(it->second);
+   	}
+    int max_countCurr = 0;
+    int best_currBox = 0;
+    auto curr_id =0;
+    for(curr_id = 0; curr_id < curr_boxes; curr_id++)
+    {
+    	int temp_count = std::count(curr_box.begin(), curr_box.end(), curr_id); 
+//         std::cout << "Curr box ID: " << curr_id << "with count " << temp_count << std::endl;
+      	if(temp_count > max_countCurr)
+    	{
+       		max_countCurr = temp_count;
+       		best_currBox  = curr_id;
+    	 }
+    }
+    bbBestMatches.insert(std::pair<int,int>(prev_id, best_currBox)); 
+  } 
 }
