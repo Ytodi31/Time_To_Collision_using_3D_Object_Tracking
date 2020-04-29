@@ -160,7 +160,45 @@ void clusterKptMatchesWithROI(BoundingBox &boundingBox, std::vector<cv::KeyPoint
 void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPoint> &kptsCurr, 
                       std::vector<cv::DMatch> kptMatches, double frameRate, double &TTC, cv::Mat *visImg)
 {
-    // ...
+  	vector<double> distRatios;
+    for (auto it1 = kptMatches.begin(); it1 != kptMatches.end(); it1++)
+    {
+     	cv::KeyPoint curr1 = kptsCurr[it1->trainIdx];
+      	cv::KeyPoint prev1 = kptsPrev[it1->queryIdx];
+      
+      for(auto it2 = kptMatches.begin() +1; it2 != kptMatches.end(); ++it2)
+      {
+        double minDist = 100;
+        cv::KeyPoint curr2 = kptsCurr[it2->trainIdx];
+      	cv::KeyPoint prev2 = kptsPrev[it2->queryIdx];
+        
+         double distCurr = cv::norm(curr1.pt - curr2.pt);
+         double distPrev = cv::norm(prev1.pt - prev2.pt);
+        
+         if (distPrev > std::numeric_limits<double>::epsilon() && distCurr >= minDist)
+            { 
+
+                double distRatio = distCurr / distPrev;
+                distRatios.push_back(distRatio);
+            }
+      }
+    }
+   // only continue if list of distance ratios is not empty
+    if (distRatios.size() == 0)
+    {
+        TTC = NAN;
+        return;
+    }
+	double medianDistRatio = 0;
+     sort(distRatios.begin(), distRatios.end());
+  	if (distRatios.size()%2 ==0)
+      medianDistRatio = distRatios[distRatios.size()/2];
+  	else
+      medianDistRatio = distRatios[(distRatios.size()+1)/2];
+    
+    double dT = 1 / frameRate;
+    TTC = -dT / (1 -  medianDistRatio);   
+    cout << "Time to collision from Camera : " << TTC << std ::endl;  
 }
 
 
@@ -191,7 +229,7 @@ void computeTTCLidar(std::vector<LidarPoint> &lidarPointsPrev,
    	catch(...){
      TTC = 0;
    	}
-    cout << "Time to collision : " << TTC << std ::endl;  
+    cout << "Time to collision from LiDAR : " << TTC << std ::endl;  
 }
 
 void matchBoundingBoxes(std::vector<cv::DMatch> &matches, std::map<int, int> &bbBestMatches, DataFrame &prevFrame, DataFrame &currFrame)
