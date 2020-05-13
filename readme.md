@@ -56,12 +56,12 @@ A comparison of the results from LiDAR with Camera for the above two detector - 
 The y-axis depeicts the time to collision and x axis depicts the frame number.
 1. SHITOMASI + ORB
 <p align="center">
-<img src="data/shitomasi_orb_result.png" width="400" height="300" />
+<img src="data/shitomasi_orb_result.png" width="600" height="300" />
 </p>
 
 2. SHITOMASI + SIFT
 <p align="center">
-<img src="data/shitomasi_sift_result.png" width="400" height="300" />
+<img src="data/shitomasi_sift_result.png" width="600" height="300" />
 </p>
 
 A detailed report can be found [here](https://drive.google.com/file/d/1M3NOZ1Tf5sOIc7oROxquHQiv1mDBUFqN/view?usp=sharing).
