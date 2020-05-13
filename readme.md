@@ -9,7 +9,7 @@ The project uses LiDAR and Camera data captured by an autonomous vehicle in test
 The project uses camera-based object classification to cluster LiDAR points and computes TTC estimate by tracking 3D bounding boxes.
 
 ## Pipeline
-In this final project, you will implement the missing parts in the schematic. To do this, you will complete four major tasks:
+
 1. Detection with Camera :
 -  Keypoint detection is perfomed followed by kepypoint matching between consecutive frames. The implementation allows the user to choose a keypoint detection method from classics such as HARRIS, SIFT, SHITOMASI and fast detectors such as FAST. BRIEF, ORB, BRISK, AKAZE and FREAK.
 - After keypoints detection, desciptors are extracted for the keypoints. Keypoint extraction can be chosen by the user from the following options : BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT.
